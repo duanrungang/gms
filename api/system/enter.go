@@ -17,5 +17,6 @@ var (
 	menuService      = service.ServiceGroupApp.SystemServiceGroup.MenuService
 	userService      = service.ServiceGroupApp.SystemServiceGroup.UserService
 	initDBService    = service.ServiceGroupApp.SystemServiceGroup.InitDBService
+	casbinService    = service.ServiceGroupApp.SystemServiceGroup.CasbinService
 	authorityService = service.ServiceGroupApp.SystemServiceGroup.AuthorityService
 )

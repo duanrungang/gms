@@ -5,11 +5,116 @@ import (
 	"gms/global"
 	"gms/model/common/request"
 	"gms/model/common/response"
+	"gms/model/system"
+	systemReq "gms/model/system/request"
+	systemRes "gms/model/system/response"
 	"gms/pkg"
 	"go.uber.org/zap"
 )
 
 type AuthorityApi struct{}
+
+// CreateAuthority
+// @Tags Authority
+// @Summary 创建角色
+// @Security ApiKeyAuth
+// @accept application/json
+// @Produce application/json
+// @Param data body system.SysAuthority true "权限id, 权限名, 父角色id"
+// @Success 200 {object} response.Response{data=systemRes.SysAuthorityResponse,msg=string} "创建角色,返回包括系统角色详情"
+// @Router /authority/createAuthority [post]
+func (a *AuthorityApi) CreateAuthority(c *gin.Context) {
+	var authority system.SysAuthority
+	_ = c.ShouldBindJSON(&authority)
+	if err := pkg.Verify(authority, pkg.AuthorityVerify); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	if authBack, err := authorityService.CreateAuthority(authority); err != nil {
+		global.GVA_LOG.Error("创建失败!", zap.Error(err))
+		response.FailWithMessage("创建失败"+err.Error(), c)
+	} else {
+		_ = menuService.AddMenuAuthority(systemReq.DefaultMenu(), authority.AuthorityId)
+		_ = casbinService.UpdateCasbin(authority.AuthorityId, systemReq.DefaultCasbin())
+		response.OkWithDetailed(systemRes.SysAuthorityResponse{Authority: authBack}, "创建成功", c)
+	}
+}
+
+// CopyAuthority
+// @Tags Authority
+// @Summary 拷贝角色
+// @Security ApiKeyAuth
+// @accept application/json
+// @Produce application/json
+// @Param data body response.SysAuthorityCopyResponse true "旧角色id, 新权限id, 新权限名, 新父角色id"
+// @Success 200 {object} response.Response{data=systemRes.SysAuthorityResponse,msg=string} "拷贝角色,返回包括系统角色详情"
+// @Router /authority/copyAuthority [post]
+func (a *AuthorityApi) CopyAuthority(c *gin.Context) {
+	var copyInfo systemRes.SysAuthorityCopyResponse
+	_ = c.ShouldBindJSON(&copyInfo)
+	if err := pkg.Verify(copyInfo, pkg.OldAuthorityVerify); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	if err := pkg.Verify(copyInfo.Authority, pkg.AuthorityVerify); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	if authBack, err := authorityService.CopyAuthority(copyInfo); err != nil {
+		global.GVA_LOG.Error("拷贝失败!", zap.Error(err))
+		response.FailWithMessage("拷贝失败"+err.Error(), c)
+	} else {
+		response.OkWithDetailed(systemRes.SysAuthorityResponse{Authority: authBack}, "拷贝成功", c)
+	}
+}
+
+// DeleteAuthority
+// @Tags Authority
+// @Summary 删除角色
+// @Security ApiKeyAuth
+// @accept application/json
+// @Produce application/json
+// @Param data body system.SysAuthority true "删除角色"
+// @Success 200 {object} response.Response{msg=string} "删除角色"
+// @Router /authority/deleteAuthority [post]
+func (a *AuthorityApi) DeleteAuthority(c *gin.Context) {
+	var authority system.SysAuthority
+	_ = c.ShouldBindJSON(&authority)
+	if err := pkg.Verify(authority, pkg.AuthorityIdVerify); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	if err := authorityService.DeleteAuthority(&authority); err != nil { // 删除角色之前需要判断是否有用户正在使用此角色
+		global.GVA_LOG.Error("删除失败!", zap.Error(err))
+		response.FailWithMessage("删除失败"+err.Error(), c)
+	} else {
+		response.OkWithMessage("删除成功", c)
+	}
+}
+
+// UpdateAuthority
+// @Tags Authority
+// @Summary 更新角色信息
+// @Security ApiKeyAuth
+// @accept application/json
+// @Produce application/json
+// @Param data body system.SysAuthority true "权限id, 权限名, 父角色id"
+// @Success 200 {object} response.Response{data=systemRes.SysAuthorityResponse,msg=string} "更新角色信息,返回包括系统角色详情"
+// @Router /authority/updateAuthority [post]
+func (a *AuthorityApi) UpdateAuthority(c *gin.Context) {
+	var auth system.SysAuthority
+	_ = c.ShouldBindJSON(&auth)
+	if err := pkg.Verify(auth, pkg.AuthorityVerify); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	if authority, err := authorityService.UpdateAuthority(auth); err != nil {
+		global.GVA_LOG.Error("更新失败!", zap.Error(err))
+		response.FailWithMessage("更新失败"+err.Error(), c)
+	} else {
+		response.OkWithDetailed(systemRes.SysAuthorityResponse{Authority: authority}, "更新成功", c)
+	}
+}
 
 // GetAuthorityList
 // @Tags Authority
@@ -37,5 +142,29 @@ func (a *AuthorityApi) GetAuthorityList(c *gin.Context) {
 			Page:     pageInfo.Page,
 			PageSize: pageInfo.PageSize,
 		}, "获取成功", c)
+	}
+}
+
+// SetDataAuthority
+// @Tags Authority
+// @Summary 设置角色资源权限
+// @Security ApiKeyAuth
+// @accept application/json
+// @Produce application/json
+// @Param data body system.SysAuthority true "设置角色资源权限"
+// @Success 200 {object} response.Response{msg=string} "设置角色资源权限"
+// @Router /authority/setDataAuthority [post]
+func (a *AuthorityApi) SetDataAuthority(c *gin.Context) {
+	var auth system.SysAuthority
+	_ = c.ShouldBindJSON(&auth)
+	if err := pkg.Verify(auth, pkg.AuthorityIdVerify); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	if err := authorityService.SetDataAuthority(auth); err != nil {
+		global.GVA_LOG.Error("设置失败!", zap.Error(err))
+		response.FailWithMessage("设置失败"+err.Error(), c)
+	} else {
+		response.OkWithMessage("设置成功", c)
 	}
 }
