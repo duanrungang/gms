@@ -42,7 +42,9 @@ func Routers() *gin.Engine {
 	PrivateGroup := Router.Group("")
 	PrivateGroup.Use(middleware.JWTAuth()).Use(middleware.CasbinHandler())
 	{
-		systemRouter.InitMenuRouter(PrivateGroup) // 注册menu路由
+		systemRouter.InitUserRouter(PrivateGroup)      // 注册用户路由
+		systemRouter.InitMenuRouter(PrivateGroup)      // 注册menu路由
+		systemRouter.InitAuthorityRouter(PrivateGroup) // 注册角色路由
 	}
 	global.GVA_LOG.Info("router register success")
 	return Router
