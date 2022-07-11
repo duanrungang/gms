@@ -9,6 +9,7 @@ type ApiGroup struct {
 	JwtApi
 	BaseApi
 	SystemApi
+	CasbinApi
 	SystemApiApi
 	AuthorityApi
 	AuthorityMenuApi
