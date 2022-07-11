@@ -12,6 +12,7 @@ type ApiGroup struct {
 	CasbinApi
 	SystemApiApi
 	AuthorityApi
+	DictionaryApi
 	AuthorityMenuApi
 }
 
@@ -25,4 +26,5 @@ var (
 	baseMenuService     = service.ServiceGroupApp.SystemServiceGroup.BaseMenuService
 	systemConfigService = service.ServiceGroupApp.SystemServiceGroup.SystemConfigService
 	authorityService    = service.ServiceGroupApp.SystemServiceGroup.AuthorityService
+	dictionaryService   = service.ServiceGroupApp.SystemServiceGroup.DictionaryService
 )
