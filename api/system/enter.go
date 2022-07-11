@@ -8,11 +8,13 @@ type ApiGroup struct {
 	DBApi
 	JwtApi
 	BaseApi
+	SystemApiApi
 	AuthorityApi
 	AuthorityMenuApi
 }
 
 var (
+	apiService       = service.ServiceGroupApp.SystemServiceGroup.ApiService
 	jwtService       = service.ServiceGroupApp.SystemServiceGroup.JwtService
 	menuService      = service.ServiceGroupApp.SystemServiceGroup.MenuService
 	userService      = service.ServiceGroupApp.SystemServiceGroup.UserService
