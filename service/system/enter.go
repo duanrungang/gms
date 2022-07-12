@@ -13,4 +13,5 @@ type ServiceGroup struct {
 	DictionaryService
 	OperationRecordService
 	DictionaryDetailService
+	AuthorityBtnService
 }

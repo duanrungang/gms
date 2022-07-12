@@ -52,6 +52,8 @@ func Routers() *gin.Engine {
 		systemRouter.InitSysDictionaryRouter(PrivateGroup)       // 字典管理
 		systemRouter.InitSysOperationRecordRouter(PrivateGroup)  // 操作记录
 		systemRouter.InitSysDictionaryDetailRouter(PrivateGroup) // 字典详情管理
+		systemRouter.InitAuthorityBtnRouterRouter(PrivateGroup)  // 字典详情管理
+
 	}
 	global.GVA_LOG.Info("router register success")
 	return Router

@@ -13,4 +13,5 @@ type RouterGroup struct {
 	AuthorityRouter
 	DictionaryDetailRouter
 	OperationRecordRouter
+	AuthorityBtnRouter
 }
