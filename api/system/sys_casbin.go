@@ -12,7 +12,6 @@ import (
 
 type CasbinApi struct{}
 
-// UpdateCasbin
 // @Tags Casbin
 // @Summary 更新角色api权限
 // @Security ApiKeyAuth
@@ -36,7 +35,6 @@ func (cas *CasbinApi) UpdateCasbin(c *gin.Context) {
 	}
 }
 
-// GetPolicyPathByAuthorityId
 // @Tags Casbin
 // @Summary 获取权限列表
 // @Security ApiKeyAuth

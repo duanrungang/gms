@@ -2,6 +2,9 @@ package initialize
 
 import (
 	"github.com/gin-gonic/gin"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger/swaggerFiles"
+	_ "gms/docs"
 	"gms/global"
 	"gms/middleware"
 	"gms/router"
@@ -28,6 +31,10 @@ func Routers() *gin.Engine {
 	// Router.Use(middleware.Cors()) // 直接放行全部跨域请求
 	//Router.Use(middleware.CorsByRules()) // 按照配置的规则放行跨域请求
 	global.GVA_LOG.Info("use middleware cors")
+	Router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	global.GVA_LOG.Info("register swagger handler")
+	// 方便统一添加路由组前缀 多服务器上线使用
+
 	PublicGroup := Router.Group("")
 	{
 		// 健康监测
