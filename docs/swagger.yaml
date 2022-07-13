@@ -450,6 +450,111 @@ definitions:
         description: 栈名
         type: string
     type: object
+  example.ExaCustomer:
+    properties:
+      createdAt:
+        description: 创建时间
+        type: string
+      customerName:
+        description: 客户名
+        type: string
+      customerPhoneData:
+        description: 客户手机号
+        type: string
+      id:
+        description: 主键ID
+        type: integer
+      sysUser:
+        $ref: '#/definitions/system.SysUser'
+        description: 管理详情
+      sysUserAuthorityID:
+        description: 管理角色ID
+        type: integer
+      sysUserId:
+        description: 管理ID
+        type: integer
+      updatedAt:
+        description: 更新时间
+        type: string
+    type: object
+  example.ExaFile:
+    properties:
+      chunkTotal:
+        type: integer
+      createdAt:
+        description: 创建时间
+        type: string
+      exaFileChunk:
+        items:
+          $ref: '#/definitions/example.ExaFileChunk'
+        type: array
+      fileMd5:
+        type: string
+      fileName:
+        type: string
+      filePath:
+        type: string
+      id:
+        description: 主键ID
+        type: integer
+      isFinish:
+        type: boolean
+      updatedAt:
+        description: 更新时间
+        type: string
+    type: object
+  example.ExaFileChunk:
+    properties:
+      createdAt:
+        description: 创建时间
+        type: string
+      exaFileID:
+        type: integer
+      fileChunkNumber:
+        type: integer
+      fileChunkPath:
+        type: string
+      id:
+        description: 主键ID
+        type: integer
+      updatedAt:
+        description: 更新时间
+        type: string
+    type: object
+  example.ExaFileUploadAndDownload:
+    properties:
+      createdAt:
+        description: 创建时间
+        type: string
+      id:
+        description: 主键ID
+        type: integer
+      key:
+        description: 编号
+        type: string
+      name:
+        description: 文件名
+        type: string
+      tag:
+        description: 文件标签
+        type: string
+      updatedAt:
+        description: 更新时间
+        type: string
+      url:
+        description: 文件地址
+        type: string
+    type: object
+  example.ExcelInfo:
+    properties:
+      fileName:
+        description: 文件名
+        type: string
+      infoList:
+        items:
+          $ref: '#/definitions/system.SysBaseMenu'
+        type: array
+    type: object
   request.AddMenuAuthorityInfo:
     properties:
       authorityId:
@@ -582,6 +687,15 @@ definitions:
       userName:
         type: string
     type: object
+  request.RollBack:
+    properties:
+      deleteTable:
+        description: 是否删除表
+        type: boolean
+      id:
+        description: 主键ID
+        type: integer
+    type: object
   request.SearchApiParams:
     properties:
       apiGroup:
@@ -647,6 +761,38 @@ definitions:
         items:
           type: integer
         type: array
+    type: object
+  request.SysAutoHistory:
+    properties:
+      keyword:
+        description: 关键字
+        type: string
+      page:
+        description: 页码
+        type: integer
+      pageSize:
+        description: 每页大小
+        type: integer
+    type: object
+  response.ExaCustomerResponse:
+    properties:
+      customer:
+        $ref: '#/definitions/example.ExaCustomer'
+    type: object
+  response.ExaFileResponse:
+    properties:
+      file:
+        $ref: '#/definitions/example.ExaFileUploadAndDownload'
+    type: object
+  response.FilePathResponse:
+    properties:
+      filePath:
+        type: string
+    type: object
+  response.FileResponse:
+    properties:
+      file:
+        $ref: '#/definitions/example.ExaFile'
     type: object
   response.LoginResponse:
     properties:
@@ -754,6 +900,71 @@ definitions:
       user:
         $ref: '#/definitions/system.SysUser'
     type: object
+  system.AutoCodeStruct:
+    properties:
+      abbreviation:
+        description: Struct简称
+        type: string
+      autoCreateApiToSql:
+        description: 是否自动创建api
+        type: boolean
+      autoMoveFile:
+        description: 是否自动移动文件
+        type: boolean
+      description:
+        description: Struct中文名称
+        type: string
+      fields:
+        items:
+          $ref: '#/definitions/system.Field'
+        type: array
+      hasTimer:
+        type: boolean
+      humpPackageName:
+        description: go文件名称
+        type: string
+      package:
+        type: string
+      packageName:
+        description: 文件名称
+        type: string
+      structName:
+        description: Struct名称
+        type: string
+      tableName:
+        description: 表名
+        type: string
+    type: object
+  system.Field:
+    properties:
+      columnName:
+        description: 数据库字段
+        type: string
+      comment:
+        description: 数据库字段描述
+        type: string
+      dataTypeLong:
+        description: 数据库字段长度
+        type: string
+      dictType:
+        description: 字典
+        type: string
+      fieldDesc:
+        description: 中文名
+        type: string
+      fieldJson:
+        description: FieldJson
+        type: string
+      fieldName:
+        description: Field名
+        type: string
+      fieldSearchType:
+        description: 搜索条件
+        type: string
+      fieldType:
+        description: Field数据类型
+        type: string
+    type: object
   system.SysApi:
     properties:
       apiGroup:
@@ -809,6 +1020,24 @@ definitions:
       parentId:
         description: 父角色ID
         type: integer
+      updatedAt:
+        description: 更新时间
+        type: string
+    type: object
+  system.SysAutoCode:
+    properties:
+      createdAt:
+        description: 创建时间
+        type: string
+      desc:
+        type: string
+      id:
+        description: 主键ID
+        type: integer
+      label:
+        type: string
+      packageName:
+        type: string
       updatedAt:
         description: 更新时间
         type: string
@@ -1591,6 +1820,366 @@ paths:
       summary: 设置权限按钮
       tags:
       - AuthorityBtn
+  /autoCode/createPackage:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 创建package
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/system.SysAutoCode'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建package成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 创建package
+      tags:
+      - AutoCode
+  /autoCode/createPlug:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 创建插件模板
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/system.SysAutoCode'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建插件模板成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 创建插件模板
+      tags:
+      - AutoCode
+  /autoCode/createTemp:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 创建自动代码
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/system.AutoCodeStruct'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success":true,"data":{},"msg":"创建成功"}'
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: 自动代码模板
+      tags:
+      - AutoCode
+  /autoCode/delPackage:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 创建package
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/system.SysAutoCode'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除package成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 删除package
+      tags:
+      - AutoCode
+  /autoCode/delSysHistory:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.GetById'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除回滚记录
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 删除回滚记录
+      tags:
+      - AutoCode
+  /autoCode/getColumn:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取当前表所有字段
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 获取当前表所有字段
+      tags:
+      - AutoCode
+  /autoCode/getDatabase:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取当前所有数据库
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 获取当前所有数据库
+      tags:
+      - AutoCode
+  /autoCode/getMeta:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.GetById'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取meta信息
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 获取meta信息
+      tags:
+      - AutoCode
+  /autoCode/getPackage:
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建package成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 获取package
+      tags:
+      - AutoCode
+  /autoCode/getSysHistory:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.SysAutoHistory'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 查询回滚记录,返回包括列表,总数,页码,每页数量
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.PageResult'
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 查询回滚记录
+      tags:
+      - AutoCode
+  /autoCode/getTables:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取当前数据库所有表
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 获取当前数据库所有表
+      tags:
+      - AutoCode
+  /autoCode/preview:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 预览创建代码
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/system.AutoCodeStruct'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 预览创建后的代码
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  additionalProperties: true
+                  type: object
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 预览创建后的代码
+      tags:
+      - AutoCode
+  /autoCode/rollback:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 请求参数
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.RollBack'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 回滚自动生成代码
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 回滚自动生成代码
+      tags:
+      - AutoCode
   /base/captcha:
     post:
       consumes:
@@ -1698,6 +2287,432 @@ paths:
       summary: 获取权限列表
       tags:
       - Casbin
+  /customer/customer:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: 客户ID
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/example.ExaCustomer'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除客户
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 删除客户
+      tags:
+      - ExaCustomer
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 创建时间
+        in: query
+        name: createdAt
+        type: string
+      - description: 客户名
+        in: query
+        name: customerName
+        type: string
+      - description: 客户手机号
+        in: query
+        name: customerPhoneData
+        type: string
+      - description: 主键ID
+        in: query
+        name: id
+        type: integer
+      - description: 管理角色ID
+        in: query
+        name: sysUserAuthorityID
+        type: integer
+      - description: 管理ID
+        in: query
+        name: sysUserId
+        type: integer
+      - description: 更新时间
+        in: query
+        name: updatedAt
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 获取单一客户信息,返回包括客户详情
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.ExaCustomerResponse'
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 获取单一客户信息
+      tags:
+      - ExaCustomer
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 客户用户名, 客户手机号码
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/example.ExaCustomer'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建客户
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 创建客户
+      tags:
+      - ExaCustomer
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: 客户ID, 客户信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/example.ExaCustomer'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 更新客户信息
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 更新客户信息
+      tags:
+      - ExaCustomer
+  /customer/customerList:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 关键字
+        in: query
+        name: keyword
+        type: string
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页大小
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 分页获取权限客户列表,返回包括列表,总数,页码,每页数量
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.PageResult'
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 分页获取权限客户列表
+      tags:
+      - ExaCustomer
+  /excel/downloadTemplate:
+    get:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: 模板名称
+        in: query
+        name: fileName
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: 下载模板
+      tags:
+      - excel
+  /excel/exportExcel:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 导出Excel文件信息
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/example.ExcelInfo'
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: ""
+      security:
+      - ApiKeyAuth: []
+      summary: 导出Excel
+      tags:
+      - excel
+  /excel/importExcel:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: 导入Excel文件
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 导入Excel文件
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 导入Excel文件
+      tags:
+      - excel
+  /excel/loadExcel:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 加载Excel数据,返回包括列表,总数,页码,每页数量
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.PageResult'
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 加载Excel数据
+      tags:
+      - excel
+  /fileUploadAndDownload/breakpointContinue:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: an example for breakpoint resume, 断点续传示例
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 断点续传到服务器
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 断点续传到服务器
+      tags:
+      - ExaFileUploadAndDownload
+  /fileUploadAndDownload/deleteFile:
+    post:
+      parameters:
+      - description: 传入文件里面id即可
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/example.ExaFileUploadAndDownload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除文件
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 删除文件
+      tags:
+      - ExaFileUploadAndDownload
+  /fileUploadAndDownload/findFile:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: 上传文件完成
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建文件,返回包括文件路径
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.FilePathResponse'
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 创建文件
+      tags:
+      - ExaFileUploadAndDownload
+  /fileUploadAndDownload/getFileList:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 页码, 每页大小
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/request.PageInfo'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 分页文件列表,返回包括列表,总数,页码,每页数量
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.PageResult'
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 分页文件列表
+      tags:
+      - ExaFileUploadAndDownload
+  /fileUploadAndDownload/removeChunk:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: 删除缓存切片
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除切片
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 删除切片
+      tags:
+      - ExaFileUploadAndDownload
+  /fileUploadAndDownload/upload:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: 上传文件示例
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 上传文件示例,返回包括文件详情
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.ExaFileResponse'
+                msg:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: 上传文件示例
+      tags:
+      - ExaFileUploadAndDownload
   /init/checkdb:
     post:
       produces:
