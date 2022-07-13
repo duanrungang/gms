@@ -7,10 +7,12 @@ type ServiceGroup struct {
 	UserService
 	CasbinService
 	InitDBService
+	AutoCodeService
 	BaseMenuService
 	SystemConfigService
 	AuthorityService
 	DictionaryService
+	AutoCodeHistoryService
 	OperationRecordService
 	DictionaryDetailService
 	AuthorityBtnService

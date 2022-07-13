@@ -8,9 +8,11 @@ type RouterGroup struct {
 	InitRouter
 	MenuRouter
 	UserRouter
+	AutoCodeRouter
 	DictionaryRouter
 	CasbinRouter
 	AuthorityRouter
+	AutoCodeHistoryRouter
 	DictionaryDetailRouter
 	OperationRecordRouter
 	AuthorityBtnRouter
