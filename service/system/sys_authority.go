@@ -174,6 +174,17 @@ func (authorityService *AuthorityService) GetAuthorityInfoList(info request.Page
 	return authority, total, err
 }
 
+//@author: [piexlmax](https://github.com/piexlmax)
+//@function: GetAuthorityInfo
+//@description: 获取所有角色信息
+//@param: auth model.SysAuthority
+//@return: sa system.SysAuthority, err error
+
+func (authorityService *AuthorityService) GetAuthorityInfo(auth system.SysAuthority) (sa system.SysAuthority, err error) {
+	err = global.GVA_DB.Preload("DataAuthorityId").Where("authority_id = ?", auth.AuthorityId).First(&sa).Error
+	return sa, err
+}
+
 //findChildrenAuthority
 //@author: [piexlmax](https://github.com/piexlmax)
 //@function: findChildrenAuthority
